@@ -18,9 +18,8 @@ import (
 
 // DefaultMinioImage is the MinIO server image set on newly created MinIO
 // instances. The minio-operator default, minio/minio on Docker Hub, can no
-// longer be pulled. Chainguard's public tier only publishes latest and
-// garbage-collects old digests, so a pinned digest would eventually break.
-const DefaultMinioImage = "cgr.dev/chainguard/minio:latest"
+// longer be pulled.
+const DefaultMinioImage = "cgr.dev/chainguard/minio@sha256:bd014394a80898e68c149f2311fdf8d5a2c2f3bb2c33b9327ae6d02b4b065ae1"
 
 // Instance returns the Minio component to deploy
 func Instance(mattermost *mattermostv1alpha1.ClusterInstallation) *minioOperator.MinIOInstance {
