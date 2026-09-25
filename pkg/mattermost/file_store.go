@@ -15,6 +15,11 @@ const (
 
 	fileStoreSecretAccessKey = "accesskey"
 	fileStoreSecretSecretKey = "secretkey"
+
+	// minioClientImage runs the init container that creates the MinIO bucket.
+	// minio/mc can no longer be pulled from Docker Hub. The -dev variant is
+	// used because the container needs a shell.
+	minioClientImage = "cgr.dev/chainguard/minio-client@sha256:578914d4ace20c6915c82a05bd5ad52701eef909def43173b2e98fec859d5d6e"
 )
 
 type FileStoreInfo struct {
@@ -119,11 +124,11 @@ func (e *OperatorManagedMinioConfig) InitContainers(mattermost *mmv1beta.Matterm
 		// Create the init container to create the MinIO bucket
 		{
 			Name:            "create-minio-bucket",
-			Image:           "minio/mc:RELEASE.2025-04-16T18-13-26Z",
+			Image:           minioClientImage,
 			ImagePullPolicy: corev1.PullIfNotPresent,
 			Command: []string{
 				"/bin/sh", "-c",
-				fmt.Sprintf("mc config host add localminio http://%s $(MINIO_ACCESS_KEY) $(MINIO_SECRET_KEY) && mc mb localminio/%s -q -p", e.minioURL, mattermost.Name),
+				fmt.Sprintf("mc alias set localminio http://%s $(MINIO_ACCESS_KEY) $(MINIO_SECRET_KEY) && mc mb localminio/%s -q -p", e.minioURL, mattermost.Name),
 			},
 			Env: []corev1.EnvVar{
 				{
